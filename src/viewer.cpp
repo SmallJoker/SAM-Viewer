@@ -9,6 +9,7 @@
 #include "gui.h"
 #include "dialog.h"
 #include "viewer.h"
+#include "GL/gl.h"
 
 #define M_ZOOM_IN(fov) std::max(fov - DEGTORAD * 2, PI * 0.0125f)
 #define M_ZOOM_OUT(fov) std::min(fov + DEGTORAD * 2, PI * 0.5f)
@@ -81,6 +82,8 @@ bool Viewer::run(IrrlichtDevice *irr_device)
 	{
 		resize();
 		driver->beginScene(true, true, bg_color);
+	glClearDepth(1.0f);
+	glClear(GL_DEPTH_BUFFER_BIT);
 		smgr->drawAll();
 		env->drawAll();
 		driver->endScene();

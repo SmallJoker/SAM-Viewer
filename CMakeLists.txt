@@ -13,6 +13,7 @@ set(VERSION_PATCH 0)
 set(VERSION_STRING "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
 add_definitions(-DUSE_CMAKE_CONFIG_H)
+find_package(OpenGL REQUIRED)
 
 configure_file (
 	"${PROJECT_SOURCE_DIR}/src/cmake_config.h.in"
@@ -20,11 +21,21 @@ configure_file (
 )
 
 if(NOT IRRLICHT_INCLUDE_DIR)
-	set(IRRLICHT_INCLUDE_DIR "/usr/include/irrlicht")
+	find_path(IRRLICHT_INCLUDE_DIR NAMES irrlicht.h
+		PATHS
+		/usr/local/include/irrlicht
+		/usr/include/irrlicht
+		/system/develop/headers/irrlicht #Haiku
+	)
 endif()
 
 if(NOT IRRLICHT_LIBRARY)
-	set(IRRLICHT_LIBRARY "/usr/local/lib/libIrrlicht.so")
+	find_library(IRRLICHT_LIBRARY NAMES libIrrlicht.so libIrrlicht.a Irrlicht
+		PATHS
+		/usr/local/lib
+		/usr/lib
+		/system/develop/lib # Haiku
+	)
 endif()
 
 include_directories(
@@ -38,5 +49,5 @@ set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 
 add_executable(${PROJECT_NAME} ${SRCS})
-target_link_libraries(${PROJECT_NAME} ${IRRLICHT_LIBRARY})
+target_link_libraries(${PROJECT_NAME} ${IRRLICHT_LIBRARY} ${OPENGL_LIBRARIES})
 
